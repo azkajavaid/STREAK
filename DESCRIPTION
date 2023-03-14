@@ -1,0 +1,24 @@
+Package: STREAK
+Type: Package
+Title: Receptor Abundance Estimation using Feature Selection and Gene
+        Set Scoring
+Version: 0.1.0
+Authors@R: c(person("H. Robert", "Frost", email = "hildreth.r.frost@dartmouth.edu", role = c("aut")),
+    person("Azka", "Javaid", email = "azka.javaid.gr@dartmouth.edu", role = c("aut", "cre")))
+Maintainer: Azka Javaid <azka.javaid.gr@dartmouth.edu>
+Description: Performs receptor abundance estimation for single cell RNA-sequencing data using a supervised feature selection mechanism and a thresholded gene set scoring procedure. Seurat's normalization method is described in: Hao et al., (2021) <doi:10.1016/j.cell.2021.04.048>, Stuart et al., (2019) <doi:10.1016/j.cell.2019.05.031>, Butler et al., (2018) <doi:10.1038/nbt.4096> and Satija et al., (2015) <doi:10.1038/nbt.3192>. Method for reduced rank reconstruction and rank-k selection is detailed in: Javaid et al., (2022) <doi:10.1101/2022.10.08.511197>. Gene set scoring procedure is described in: Frost et al., (2020) <doi:10.1093/nar/gkaa582>. Clustering method is outlined in: Song et al., (2020) <doi:10.1093/bioinformatics/btaa613> and Wang et al., (2011) <doi:10.32614/RJ-2011-015>.
+License: GPL (>= 2)
+Encoding: UTF-8
+LazyData: true
+LazyDataCompression: xz
+Imports: Ckmeans.1d.dp, Matrix, Seurat, SPECK, stats, VAM
+RoxygenNote: 7.2.1
+Depends: R (>= 2.10)
+Suggests: knitr, rmarkdown
+VignetteBuilder: knitr
+NeedsCompilation: no
+Packaged: 2022-11-28 12:29:19 UTC; azkajavaid
+Author: H. Robert Frost [aut],
+  Azka Javaid [aut, cre]
+Repository: CRAN
+Date/Publication: 2022-11-29 10:30:05 UTC

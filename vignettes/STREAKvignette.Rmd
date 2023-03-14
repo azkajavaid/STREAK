@@ -1,0 +1,71 @@
+---
+title: 'Supervised Learning-based Receptor Abundance Estimation using STREAK: An Application to the 10X Genomics human extranodal marginal zone B-cell tumor/mucosa-associated lymphoid tissue (MALT) dataset'
+author: "Azka Javaid and H. Robert Frost"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+#output: rmarkdown::html_vignette
+bibliography: references.bib
+vignette: >
+  %\VignetteIndexEntry{STREAKvignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Load the STREAK package 
+
+STREAK is a supervised receptor abundance estimation method that depends on functionalities from the Seurat [@seuratCell2021; @seuratCell2019; @seuratNature2018; @seuratNature2015], SPECK [@SPECK-R], VAM [@VAM-R] and Ckmeans.1d.dp [@Wang2011Ckmeans; @song2020wuc] packages.
+
+```{r message=FALSE, warning=FALSE}
+library(STREAK)
+```
+## Receptor gene set construction using a subset of joint scRNA-seq/CITE-seq training data
+
+STREAK performs receptor abundance estimation by leveraging expression associations learned from joint scRNA-seq/CITE-seq training data. These associations can either be manually specified using pre-existing ground truth or can be built using a subset of joint transcriptomics and proteomics data. Below, we use a subset of 1000 cells from the 10X Genomics human extranodal marginal zone B-cell tumor/mucosa-associated lymphoid tissue (MALT) scRNA-seq/CITE-seq joint dataset to build a gene set weights membership matrix for the CD3, CD4, CD8a, CD14 and CD15 receptors. Given a $m \times n$ training scRNA-seq counts matrix and a $m \times h$ CITE-seq matrix, the `receptorGeneSetConstruction()` function is utilized to learn associations between each CITE-seq ADT transcript and all scRNA-seq transcripts. The resulting gene weights membership matrix is $n \times h$. 
+
+```{r message=FALSE, warning=FALSE}
+data("train.malt.rna.mat")
+data("train.malt.adt.mat")
+receptor.geneset.matrix.out <- receptorGeneSetConstruction(train.rnaseq = 
+                                                  train.malt.rna.mat, 
+                                                train.citeseq = 
+                                                  train.malt.adt.mat[,1:5], 
+                                                rank.range.end = 100, 
+                                                min.consec.diff = 0.01, 
+                                                rep.consec.diff = 2,
+                                                manual.rank = NULL, 
+                                                seed.rsvd = 1)
+dim(receptor.geneset.matrix.out)
+head(receptor.geneset.matrix.out)
+```
+
+## Receptor abundance estimation for target scRNA-seq data 
+
+Following the development of weighted gene sets, the `receptorAbundanceEstimation()` function is used to perform receptor abundance estimation. A subset of 1100 cells from the 10X Genomics MALT scRNA-seq data is used for estimation. Given a $m \times n$ target scRNA-seq counts matrix and a $n \times h$ gene set weights membership matrix, target scRNA-seq expression from top most weighted genes with each ADT transcript is used for gene set scoring and subsequent thresholding. The resulting estimated receptor abundance matrix is $m \times h$. 
+
+```{r message=FALSE, warning=FALSE}
+data("target.malt.rna.mat")
+receptor.abundance.estimates.out <- 
+  receptorAbundanceEstimation(target.rnaseq = target.malt.rna.mat,
+                              receptor.geneset.matrix = 
+                                receptor.geneset.matrix.out,
+                              num.genes = 10, rank.range.end = 100, 
+                              min.consec.diff = 0.01, rep.consec.diff = 2,
+                              manual.rank = NULL, seed.rsvd = 1, 
+                              max.num.clusters = 4, seed.ckmeans = 2)
+dim(receptor.abundance.estimates.out)
+head(receptor.abundance.estimates.out)
+```
+
+
+## References 
+
+
